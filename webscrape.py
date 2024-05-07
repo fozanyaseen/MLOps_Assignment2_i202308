@@ -49,10 +49,14 @@ def transform(**kwargs):
     return transformed_data
 
 # Define the load task
+
+def change_directory():
+    subprocess.run(["cd", "/mnt/c/Users/hamma/OneDrive/Desktop/MLOpsA2"], check=True)
+
 def load(**kwargs):
     ti = kwargs['ti']
     transformed_data = ti.xcom_pull(task_ids='transform')
-    with open('/mnt/c/Users/hamma/OneDrive/Desktop/MLOpsA2/scraped.txt', 'w') as file:
+    with open('scraped.txt', 'w') as file:
         for url in transformed_data:
             file.write(url + '\n')
     print("Data saved to scraped.txt")
@@ -89,6 +93,12 @@ transform_task = PythonOperator(
     dag=dag,
 )
 
+change_directory_task = PythonOperator(
+    task_id='change_directory',
+    python_callable=change_directory,
+    dag=dag,
+)
+
 load_task = PythonOperator(
     task_id='load',
     python_callable=load,
@@ -101,6 +111,7 @@ dvc_add_task = PythonOperator(
     python_callable=dvc_add,
     dag=dag,
 )
+
 
 dvc_push_task = PythonOperator(
     task_id='dvc_push',
@@ -115,4 +126,4 @@ git_commit_push_task = PythonOperator(
 )
 
 # Setting task dependencies
-extract_task >> transform_task >> load_task >> dvc_add_task >> dvc_push_task >> git_commit_push_task
+extract_task >> transform_task >> load_task >> change_directory_task >> dvc_add_task >> dvc_push_task >> git_commit_push_task
