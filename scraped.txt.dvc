@@ -1,0 +1,5 @@
+outs:
+- md5: 02ff91a58e124bab0cb2f3ebbf8ee874
+  size: 23510
+  hash: md5
+  path: scraped.txt
