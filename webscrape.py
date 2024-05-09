@@ -50,8 +50,7 @@ def transform(**kwargs):
 
 # Define the load task
 
-def change_directory():
-    subprocess.run(["cd", "/mnt/c/Users/hamma/OneDrive/Desktop/MLOpsA2"], check=True)
+
 
 def load(**kwargs):
     ti = kwargs['ti']
@@ -93,11 +92,6 @@ transform_task = PythonOperator(
     dag=dag,
 )
 
-change_directory_task = PythonOperator(
-    task_id='change_directory',
-    python_callable=change_directory,
-    dag=dag,
-)
 
 load_task = PythonOperator(
     task_id='load',
@@ -126,4 +120,4 @@ git_commit_push_task = PythonOperator(
 )
 
 # Setting task dependencies
-extract_task >> transform_task >> load_task >> change_directory_task >> dvc_add_task >> dvc_push_task >> git_commit_push_task
+extract_task >> transform_task >> load_task >> dvc_add_task >> dvc_push_task >> git_commit_push_task
